@@ -13,3 +13,23 @@ For visualizing mujoco in a GUI viewer:
 ```console
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 ```
+
+## User-customized PATH for PKUfudawei:
+
+Before running only needs
+```console
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$HOME/.mujoco/mujoco210/bin:/usr/lib/nvidia:$LD_LIBRARY_PATH
+```
+
+For automatication, config `$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh`:
+```bash
+# $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+export OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$HOME/.mujoco/mujoco210/bin:/usr/lib/nvidia:$LD_LIBRARY_PATH
+```
+and `$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh`:
+```bash
+# $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
+export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
+unset OLD_LD_LIBRARY_PATH
+```

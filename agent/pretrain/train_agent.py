@@ -69,6 +69,7 @@ class PreTrainAgent:
         self.use_wandb = cfg.wandb is not None
         if cfg.wandb is not None:
             wandb.init(
+                mode='offline',
                 entity=cfg.wandb.entity,
                 project=cfg.wandb.project,
                 name=cfg.wandb.run,
