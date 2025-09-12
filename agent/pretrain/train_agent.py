@@ -68,13 +68,23 @@ class PreTrainAgent:
         # Wandb
         self.use_wandb = cfg.wandb is not None
         if cfg.wandb is not None:
-            wandb.init(
-                mode='offline',
-                entity=cfg.wandb.entity,
-                project=cfg.wandb.project,
-                name=cfg.wandb.run,
-                config=OmegaConf.to_container(cfg, resolve=True),
-            )
+            try:
+                wandb.init(
+                    mode="online",
+                    entity=cfg.wandb.entity,
+                    project=cfg.wandb.project,
+                    name=cfg.wandb.run,
+                    config=OmegaConf.to_container(cfg, resolve=True),
+                )
+            except Exception as e:
+                print(f"[INFO] W&B online init failed ({e}). Switching to offline mode.")
+                wandb.init(
+                    mode="offline",
+                    entity=cfg.wandb.entity,
+                    project=cfg.wandb.project,
+                    name=cfg.wandb.run,
+                    config=OmegaConf.to_container(cfg, resolve=True),
+                )
 
         # Build model
         self.model = hydra.utils.instantiate(cfg.model)

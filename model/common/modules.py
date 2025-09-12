@@ -72,15 +72,26 @@ class RandomShiftsAug:
 # test random shift
 if __name__ == "__main__":
     from PIL import Image
-    #import requests
     import numpy as np
 
-    #image_url = "https://rail.eecs.berkeley.edu/datasets/bridge_release/raw/bridge_data_v2/datacol2_toykitchen7/drawer_pnp/01/2023-04-19_09-18-15/raw/traj_group0/traj0/images0/im_30.jpg"
-    #image = Image.open(requests.get(image_url, stream=True).raw)
-    image_path = './data/image/im_30.jpg'
-    image = Image.open(image_path)
-    image = image.resize((96, 96))
+    local_image_path = './data/image/im_30.jpg'
+    image_url = "https://rail.eecs.berkeley.edu/datasets/bridge_release/raw/bridge_data_v2/datacol2_toykitchen7/drawer_pnp/01/2023-04-19_09-18-15/raw/traj_group0/traj0/images0/im_30.jpg"
 
+    try:
+        import requests
+        response = requests.get(image_url, stream=True, timeout=5)
+        response.raise_for_status()  # 网络异常会抛出异常
+        image = Image.open(response.raw)
+        print("[INFO] Loaded image from online URL")
+    except Exception as e:
+        import os
+        if os.path.exists(local_image_path):
+            image = Image.open(local_image_path)
+            print(f"[INFO] Online load failed ({e}). Using local image at {local_image_path}")
+        else:
+            raise FileNotFoundError(f"Cannot load image from online or local path: {local_image_path}")
+
+    image = image.resize((96, 96))
     image = torch.tensor(np.array(image)).permute(2, 0, 1).unsqueeze(0).float()
     aug = RandomShiftsAug(pad=4)
     image_aug = aug(image)
